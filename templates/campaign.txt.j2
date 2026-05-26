@@ -1,0 +1,21 @@
+{{ today }} 最新物件のご案内
+
+{{ from_name }}です。最新の物件データから、自動チェック済みのおすすめ物件をご案内します。
+
+{% for property in properties %}
+---
+{{ property.title }}
+価格: {{ "{:,.0f}".format(property.price) }}円
+面積: {{ property.area }}㎡
+所在地: {{ property.address }}
+{% if property.station %}最寄り: {{ property.station }}
+{% endif %}{% if property.layout %}間取り: {{ property.layout }}
+{% endif %}更新日: {{ property.updated_at.strftime('%Y-%m-%d') }}
+詳細: {{ property.detail_url }}
+{% if property.brochure_url %}資料: {{ property.brochure_url }}
+{% endif %}{% if property.notes %}備考: {{ property.notes }}
+{% endif %}
+{% endfor %}
+内見希望や資料請求は、このメールに返信してください。
+配信停止をご希望の場合は、このメールに「配信停止」と返信してください。
+返信先: {{ reply_to }}
