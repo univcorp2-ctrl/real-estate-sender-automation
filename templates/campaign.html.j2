@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>{{ today }} 最新物件情報</title>
+  </head>
+  <body style="font-family: sans-serif; line-height: 1.7; color: #222;">
+    <h1>{{ today }} 最新物件のご案内</h1>
+    <p>{{ from_name }}です。最新の物件データから、自動チェック済みのおすすめ物件をご案内します。</p>
+
+    {% for property in properties %}
+    <section style="border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin: 18px 0;">
+      <h2 style="margin-top: 0;">{{ property.title }}</h2>
+      <ul>
+        <li>価格: {{ "{:,.0f}".format(property.price) }}円</li>
+        <li>面積: {{ property.area }}㎡</li>
+        <li>所在地: {{ property.address }}</li>
+        {% if property.station %}<li>最寄り: {{ property.station }}</li>{% endif %}
+        {% if property.layout %}<li>間取り: {{ property.layout }}</li>{% endif %}
+        <li>更新日: {{ property.updated_at.strftime('%Y-%m-%d') }}</li>
+      </ul>
+      <p><a href="{{ property.detail_url }}">物件詳細を見る</a></p>
+      {% if property.brochure_url %}<p><a href="{{ property.brochure_url }}">物件資料を見る</a></p>{% endif %}
+      {% if property.notes %}<p>{{ property.notes }}</p>{% endif %}
+    </section>
+    {% endfor %}
+
+    <p>内見希望や資料請求は、このメールに返信してください。</p>
+    <p style="font-size: 12px; color: #666;">配信停止をご希望の場合は、このメールに「配信停止」と返信してください。</p>
+    <p style="font-size: 12px; color: #666;">返信先: {{ reply_to }}</p>
+  </body>
+</html>
