@@ -1,0 +1,83 @@
+name: Property mailer automation
+
+on:
+  schedule:
+    # 09:15 JST on Mon/Wed/Fri. GitHub cron is UTC.
+    - cron: "15 0 * * 1,3,5"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "run_daily, verify_only, reply_inquiry"
+        required: true
+        default: "run_daily"
+        type: choice
+        options:
+          - run_daily
+          - verify_only
+          - reply_inquiry
+      inquiry_payload:
+        description: "JSON for reply_inquiry mode"
+        required: false
+        default: ""
+      dry_run:
+        description: "Force dry run"
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: property-mailer-production
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PROPERTY_SOURCE_MODE: google_drive
+      GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+      GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+      AUTOMATION_WORKER_URL: ${{ secrets.AUTOMATION_WORKER_URL }}
+      WORKER_SHARED_SECRET: ${{ secrets.WORKER_SHARED_SECRET }}
+      SENDER_FROM_EMAIL: ${{ vars.SENDER_FROM_EMAIL }}
+      SENDER_FROM_NAME: ${{ vars.SENDER_FROM_NAME }}
+      SENDER_REPLY_TO: ${{ vars.SENDER_REPLY_TO }}
+      SENDER_GROUP_IDS: ${{ vars.SENDER_GROUP_IDS }}
+      SENDER_SEGMENT_IDS: ${{ vars.SENDER_SEGMENT_IDS }}
+      SENDER_SEND_MODE: schedule
+      SENDER_SCHEDULE_TIME_JST: "10:00"
+      MAX_PROPERTIES_PER_CAMPAIGN: "10"
+      REQUIRE_MANUAL_APPROVAL: "false"
+      RECORD_DRY_RUNS: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run daily campaign pipeline
+        if: ${{ github.event.inputs.mode == '' || github.event.inputs.mode == 'run_daily' }}
+        run: |
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            python -m property_mailer run-daily --dry-run
+          else
+            python -m property_mailer run-daily
+          fi
+      - name: Verify only
+        if: ${{ github.event.inputs.mode == 'verify_only' }}
+        run: python -m property_mailer run-daily --verify-only
+      - name: Reply to inquiry
+        if: ${{ github.event.inputs.mode == 'reply_inquiry' }}
+        run: python -m property_mailer reply-inquiry --payload '${{ github.event.inputs.inquiry_payload }}'
+      - name: Upload audit artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: property-mailer-audit
+          path: |
+            out/**/*.json
+            out/**/*.html
+            out/**/*.txt
+          if-no-files-found: ignore
