@@ -1,0 +1,3 @@
+email,name,consent,segment
+customer1@example.com,山田太郎,true,buyer
+customer2@example.com,佐藤花子,true,buyer
