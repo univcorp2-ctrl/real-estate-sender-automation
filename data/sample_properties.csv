@@ -1,0 +1,4 @@
+property_id,title,price,area,address,status,updated_at,detail_url,brochure_url,station,layout,notes
+P-1001,渋谷区 新築マンション 2LDK,92800000,62.4,東京都渋谷区神南1丁目,active,2026-05-20T09:00:00+09:00,https://example.com/properties/P-1001,https://example.com/brochures/P-1001.pdf,渋谷駅 徒歩7分,2LDK,南向きの明るい住戸
+P-1002,港区 リノベーション済み 1LDK,74800000,45.1,東京都港区芝公園2丁目,active,2026-05-21T10:30:00+09:00,https://example.com/properties/P-1002,https://example.com/brochures/P-1002.pdf,芝公園駅 徒歩3分,1LDK,投資用にも検討可能
+P-1003,目黒区 戸建て 3LDK,128000000,88.0,東京都目黒区中目黒3丁目,inactive,2026-05-18T12:00:00+09:00,https://example.com/properties/P-1003,https://example.com/brochures/P-1003.pdf,中目黒駅 徒歩10分,3LDK,販売停止中
