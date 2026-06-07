@@ -1,4 +1,4 @@
-[project]
+, "UP017"[project]
 name = "real-estate-sender-automation"
 version = "0.1.0"
 description = "Real estate property email automation using Google Drive, Sender.net, Cloudflare Worker, D1, and GitHub Actions."
